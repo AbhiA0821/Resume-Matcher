@@ -1,0 +1,14 @@
+__pycache__/
+*.pkl
+*.pyc
+*.pyo
+data/resume_matcher.db
+models/
+.env
+.venv/
+venv/
+*.egg-info/
+dist/
+build/
+.DS_Store
+Thumbs.db
