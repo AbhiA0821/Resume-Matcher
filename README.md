@@ -1,141 +1,204 @@
-# AI-Powered Resume & Job Matcher
-### Built with KNN + Random Forest | Streamlit | SQLite
+# 🎯 SkillSync AI — Resume Analyzer & Live Job Matcher
+
+A final year portfolio project built using Python, Machine Learning, and Streamlit.  
+Upload your resume → Skills get detected automatically → Pick your job preference → Get real live Indian job listings instantly.
+
+### 🌐 Live Demo
+Open in Streamlit :  https://resume-matcher-ypjig2msxnqn7dchb2ctg5.streamlit.app
+
+👉 **[Click here to open the app](https://resume-matcher-ypjig2msxnqn7dchb2ctg5.streamlit.app)**
 
 ---
 
-## Project Structure
+## 👨‍💻 Built By
+
+**Abhishek Ainapure**  
+3rd Year B.Tech — Artificial Intelligence  
+Annasaheb Dange College of Engineering, Ashta  
+🔗 GitHub: [github.com/AbhiA0821](https://github.com/AbhiA0821)
+
+---
+
+## 💡 Why I Built This
+
+Most resume tools only work for software or data science jobs. I wanted to build something that works for **every type of engineer** — Mechanical, Electrical, IoT, Civil, Chemical, and more. This project combines resume parsing, machine learning, and a real job API to give useful, practical output to any student or fresher looking for jobs in India.
+
+---
+
+## 🔍 What This Project Does
+
+1. You upload your resume as PDF or DOCX
+2. The app reads the entire resume and finds all your skills automatically
+3. It detects what type of engineer you are (Mechanical, Data Science, Electrical, etc.)
+4. You pick the kind of job you want from a dropdown with 20 job roles
+5. The app fetches **real live job listings** from LinkedIn, Indeed, Glassdoor and Naukri
+6. You see job cards with company name, location, salary, job type, and a direct Apply Now link
+
+---
+
+## 🖥️ Pages in the App
+
+### 🏠 Home Page
+- Hero banner with project title
+- Stats cards — ML Models Active, Skills Tracked, Live Jobs
+- "How It Works" — 5 step visual guide
+- Full resume upload and analysis section built directly on this page
+
+### 🔴 Live Jobs Page
+- Manual job search without uploading resume
+- Filter by job category (12 options) and Indian city (10 cities)
+- Choose how many jobs to show — 5, 10, 15, or 20
+- Fetches real jobs on every search click
+
+---
+
+## ✨ Key Features
+
+| Feature | Details |
+|---------|---------|
+| Resume Parsing | Reads PDF and DOCX files, extracts all text including tables and columns |
+| Skill Detection | Matches against 150+ skills across 8+ engineering domains |
+| Role Detection | Automatically identifies if you are Mechanical, Electrical, Data Science, IoT etc. |
+| Job Preference | Dropdown with 20 job roles — auto-selects the best match based on your skills |
+| Live Jobs | Pulls real jobs from LinkedIn, Indeed, Glassdoor, Naukri via JSearch API |
+| Job Cards | Shows company logo, title, location, salary, job type, description, Apply Now button |
+| Dark UI | Cyberpunk style dark theme — purple and green color scheme, Space Mono font |
+| Manual Input | Can also enter skills manually without uploading a resume |
+
+---
+
+## 🧠 Machine Learning
+
+Two ML models are used in this project:
+
+### KNN — K Nearest Neighbors
+- Used for job recommendation
+- Finds the most similar job roles based on your skill set
+- Implemented using scikit-learn
+
+### Random Forest Classifier
+- Used for role classification and ATS score prediction
+- Trained on a job descriptions dataset
+- Gives a confidence score for your best matching role
+
+### Skill Extraction Logic
+- Resume text is extracted using pdfplumber (for PDF) and python-docx (for DOCX)
+- Text is cleaned, lowercased, and checked against 150+ skill keywords
+- Matched skills are passed to the ML models for classification
+
+---
+
+## 🛠️ Tech Stack
+
+| Layer | Tool |
+|-------|------|
+| UI Framework | Streamlit |
+| PDF Parsing | pdfplumber |
+| DOCX Parsing | python-docx |
+| Machine Learning | scikit-learn (KNN, Random Forest) |
+| Data Handling | Pandas, NumPy |
+| Charts | Plotly |
+| Live Jobs | JSearch API (RapidAPI) |
+| Database | SQLite |
+| Language | Python 3.9+ |
+
+---
+
+## 💼 Job Domains Supported
+
+| Domain | Example Skills Detected |
+|--------|------------------------|
+| Mechanical | AutoCAD, CATIA, SolidWorks, ANSYS, CNC, HVAC, FEA |
+| Electrical | PLC, SCADA, VLSI, Verilog, PCB, MATLAB, Power Systems |
+| Embedded / IoT | Arduino, Raspberry Pi, ESP32, FPGA, Microcontroller, MQTT |
+| Electronics | Signal Processing, RF Design, Circuit Design |
+| Civil | Revit, STAAD Pro, BIM, Structural Design, GIS |
+| Chemical | Aspen Plus, HYSYS, Piping, Process Engineering |
+| Data Science / ML | Python, TensorFlow, PyTorch, NLP, Computer Vision |
+| AI / GenAI | LLM, Generative AI, LangChain, Hugging Face, MLOps |
+| Software | React, Django, Node.js, Java, Flutter, Docker, AWS |
+
+---
+
+## 📁 Project Structure
 
 ```
 resume_matcher/
 │
-├── app.py              ← Main Streamlit UI
-├── parser.py           ← Resume PDF/DOCX parsing
-├── matcher.py          ← KNN + Random Forest ML models
-├── database.py         ← SQLite storage
-├── requirements.txt    ← All dependencies
+├── app.py              ← Main Streamlit app — all pages and UI
+├── parser.py           ← Resume text extraction and skill detection
+├── matcher.py          ← KNN and Random Forest ML models
+├── database.py         ← SQLite database setup
+├── requirements.txt    ← Python packages needed
+├── README.md           ← This file
 │
 ├── data/
-│   └── jobs.csv        ← Sample job descriptions dataset
+│   └── jobs.csv        ← Sample job dataset used for model training
 │
-└── models/             ← Saved ML model files (auto created)
+└── models/             ← Auto-created when app runs first time
     ├── knn_recommender.pkl
     └── ats_predictor.pkl
 ```
 
 ---
 
-## Steps to Run the Project
+## ▶️ How to Run Locally
 
-### Step 1 — Install Python
-Make sure Python 3.9 or above is installed.
-Check by running: `python --version`
+**Step 1 — Clone the repo**
+```bash
+git clone https://github.com/YOUR_USERNAME/resume-matcher.git
+cd resume-matcher
+```
 
-### Step 2 — Open Project in VS Code
-- Open VS Code
-- Go to File → Open Folder
-- Select the `resume_matcher` folder
-
-### Step 3 — Open Terminal in VS Code
-- Press `Ctrl + ~` to open terminal
-
-### Step 4 — Install Required Libraries
+**Step 2 — Install packages**
 ```bash
 pip install -r requirements.txt
 ```
-Wait for all libraries to install. This may take 2-3 minutes.
 
-### Step 5 — Run the App
+**Step 3 — Run the app**
 ```bash
 streamlit run app.py
 ```
 
-### Step 6 — Open in Browser
-After running, the app opens automatically at:
+**Step 4 — Open in browser**
 ```
 http://localhost:8501
 ```
 
 ---
 
-## How to Use the App
+## 🔑 Live Jobs API
 
-1. Go to **Analyze Resume** page
-2. Upload your resume PDF or DOCX file
-3. Enter your name
-4. Click Analyze
-5. See your ATS score, top job matches, and missing skills
-6. Click Save Result to store in database
+Jobs are fetched using **JSearch API** from RapidAPI which pulls from LinkedIn, Indeed, Glassdoor and Naukri.
 
----
+- Free plan: 500 requests/month, no credit card needed
+- Sign up: https://rapidapi.com/letscrape-6bRBa3QguO5/api/jsearch
 
-## How to Add Your Own Job Dataset
-
-1. Go to **Job Database** page in the app
-2. Upload your jobs CSV file
-3. CSV must have these columns:
-   - job_title
-   - company
-   - required_skills
-   - experience_level
-   - job_role
-
----
-
-## ML Models Used
-
-| Model | Task | Library |
-|-------|------|---------|
-| KNN | Job Recommendation | scikit-learn |
-| Random Forest | ATS Score Prediction | scikit-learn |
-| Random Forest | Job Role Classification | scikit-learn |
-| TF-IDF | Text Vectorization | scikit-learn |
-
----
-
-## Tech Stack
-
-| Layer | Technology |
-|-------|-----------|
-| Resume Parsing | pdfplumber, python-docx |
-| Data Processing | Pandas, NumPy |
-| ML Models | scikit-learn (KNN, Random Forest) |
-| Visualization | Plotly |
-| UI | Streamlit |
-| Storage | SQLite |
-| Dev Environment | VS Code |
-
----
-
-## Common Errors & Fixes
-
-**Error: ModuleNotFoundError**
-→ Run `pip install -r requirements.txt` again
-
-**Error: streamlit not found**
-→ Run `pip install streamlit`
-
-**App not opening in browser**
-→ Manually open `http://localhost:8501`
-
-**No skills extracted from resume**
-→ Use the manual skill input box instead
-
----
-
-## How to Create ZIP File in VS Code
-
-1. Open VS Code terminal (`Ctrl + ~`)
-2. Navigate to parent folder of your project
-3. Run this command:
-```bash
-# On Windows
-Compress-Archive -Path resume_matcher -DestinationPath resume_matcher.zip
-
-# On Mac/Linux
-zip -r resume_matcher.zip resume_matcher/
+To use your own key replace this line in `app.py`:
+```python
+RAPIDAPI_KEY = "your_key_here"
 ```
-4. ZIP file will be created in the same folder
 
 ---
 
-Made with Python, scikit-learn, and Streamlit
+## 🚀 Deploy Free on Streamlit Cloud
+
+1. Push this project to GitHub
+2. Go to https://share.streamlit.io and sign in with GitHub
+3. Click **New App** → select this repo → set main file as `app.py`
+4. Click **Deploy**
+
+App goes live at `https://your-username-resume-matcher.streamlit.app`
+
+---
+
+## 📌 What I Learned
+
+- Parsing PDF and DOCX files in Python
+- Building and training KNN and Random Forest models with scikit-learn
+- Integrating a third party REST API (JSearch / RapidAPI) using requests
+- Building multi-page Streamlit apps with custom HTML and CSS
+- Designing a dark theme UI inside Streamlit
+- Building a skill detection system that works across all engineering domains
+
+---
