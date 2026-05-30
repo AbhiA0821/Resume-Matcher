@@ -122,7 +122,8 @@ if not recommender.is_fitted and len(jobs_df) > 0:
     recommender.fit(jobs_df)
     recommender.save()
 
-RAPIDAPI_KEY = "46500ed60emsh8655fe0596fa7eap148e34jsn4f2ca5f482e4"
+import os
+RAPIDAPI_KEY = os.environ.get("RAPIDAPI_KEY", "46500ed60emsh8655fe0596fa7eap148e34jsn4f2ca5f482e4")
 
 # ── Helper: Render Job Cards ──
 def render_live_job_cards(live_jobs):
@@ -223,42 +224,28 @@ if "Home" in page:
     </div>
     """, unsafe_allow_html=True)
 
-    # ── Stats Row ──
+
+
+    # ── Compact Stats Pills ──
     st.markdown("""
-    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-bottom:2rem">
-        <div class="metric-card"><div class="metric-icon">🧠</div><div class="metric-num">2</div><div class="metric-label">ML Models Active</div></div>
-        <div class="metric-card"><div class="metric-icon">⚡</div><div class="metric-num">150+</div><div class="metric-label">Skills Tracked</div></div>
-        <div class="metric-card"><div class="metric-icon">🔴</div><div class="metric-num">Live</div><div class="metric-label">Job Recommendations</div></div>
+    <div style="display:flex;gap:0.6rem;margin-bottom:1rem;flex-wrap:wrap">
+        <div style="background:#1a1a24;border:1px solid #2a2a3a;border-radius:20px;padding:0.4rem 1rem;display:flex;align-items:center;gap:0.5rem">
+            <span>🧠</span><span style="font-weight:700;color:#e8e8f0;font-size:0.85rem">2 ML Models</span>
+        </div>
+        <div style="background:#1a1a24;border:1px solid #2a2a3a;border-radius:20px;padding:0.4rem 1rem;display:flex;align-items:center;gap:0.5rem">
+            <span>⚡</span><span style="font-weight:700;color:#e8e8f0;font-size:0.85rem">150+ Skills Tracked</span>
+        </div>
+        <div style="background:#1a1a24;border:1px solid #43e97b44;border-radius:20px;padding:0.4rem 1rem;display:flex;align-items:center;gap:0.5rem">
+            <span style="width:8px;height:8px;border-radius:50%;background:#43e97b;display:inline-block;box-shadow:0 0 6px #43e97b"></span>
+            <span style="font-weight:700;color:#43e97b;font-size:0.85rem">Live Job Recommendations</span>
+        </div>
     </div>
     """, unsafe_allow_html=True)
 
-    # ── How It Works ──
-    st.markdown('<div class="section-header">⚙️ How It Works</div>', unsafe_allow_html=True)
-    c1, c2, c3, c4, c5 = st.columns(5)
-    steps = [
-        ("01", "📤", "Upload Resume",  "PDF or DOCX"),
-        ("02", "🔍", "Parse Skills",   "Auto-detected"),
-        ("03", "🤖", "KNN Match",      "Role classified"),
-        ("04", "📊", "Skill Analysis", "Gap identified"),
-        ("05", "💼", "Job Preference", "10 live jobs shown"),
-    ]
-    for col, (num, icon, title, desc) in zip([c1, c2, c3, c4, c5], steps):
-        with col:
-            st.markdown(f"""
-            <div class="info-pill">
-                <div style="font-size:1.5rem">{icon}</div>
-                <div style="font-family:'Space Mono',monospace;font-size:0.65rem;color:#6b6b80;margin:0.3rem 0">{num}</div>
-                <div style="font-weight:700;font-size:0.85rem">{title}</div>
-                <div style="font-size:0.75rem;color:#6b6b80;margin-top:0.2rem">{desc}</div>
-            </div>""", unsafe_allow_html=True)
-
-    st.markdown("<br>", unsafe_allow_html=True)
-    st.markdown('<hr>', unsafe_allow_html=True)
-
     # ── Analyze Resume Section ──
     st.markdown("""
-    <h2 style="font-size:1.8rem;font-weight:800;margin:1rem 0 0.3rem 0">📊 Analyze Your Resume</h2>
-    <p style="color:#6b6b80;margin:0 0 1.5rem 0">Upload your resume and get 10 live Indian job recommendations matched to your skills</p>
+    <h2 style="font-size:1.5rem;font-weight:800;margin:0.2rem 0 0.3rem 0">📄 Upload Your Resume</h2>
+    <p style="color:#6b6b80;margin:0 0 1rem 0;font-size:0.85rem">Upload your resume → skills detected → pick job preference → get real live Indian jobs instantly</p>
     """, unsafe_allow_html=True)
 
     col1, col2 = st.columns([1, 2], gap="large")
@@ -290,157 +277,92 @@ if "Home" in page:
                 exp_label = 'FRESHER' if experience_years == 0 else 'MID' if experience_years <= 2 else 'SENIOR'
 
                 # ── Detect Best Role dynamically from skills ──
-                role_map = {
-                    "autocad":"MECHANICAL","solidworks":"MECHANICAL","catia":"MECHANICAL",
-                    "ansys":"MECHANICAL","cad":"MECHANICAL","cnc":"MECHANICAL",
-                    "manufacturing":"MECHANICAL","hvac":"MECHANICAL","automobile":"MECHANICAL",
-                    "thermodynamics":"MECHANICAL","robotics":"MECHANICAL",
-                    "electrical":"ELECTRICAL","plc":"ELECTRICAL","scada":"ELECTRICAL",
-                    "power systems":"ELECTRICAL","vlsi":"ELECTRICAL","verilog":"ELECTRICAL",
-                    "pcb":"ELECTRICAL","power electronics":"ELECTRICAL","solar":"ELECTRICAL",
-                    "matlab":"ELECTRICAL",
-                    "embedded":"EMBEDDED / IOT","iot":"EMBEDDED / IOT","arduino":"EMBEDDED / IOT",
-                    "raspberry pi":"EMBEDDED / IOT","microcontroller":"EMBEDDED / IOT","fpga":"EMBEDDED / IOT",
-                    "signal processing":"ELECTRONICS","rf":"ELECTRONICS","circuit":"ELECTRONICS",
-                    "civil":"CIVIL","structural":"CIVIL","revit":"CIVIL","construction":"CIVIL","staad":"CIVIL",
-                    "chemical":"CHEMICAL","process engineering":"CHEMICAL","piping":"CHEMICAL",
-                    "machine learning":"DATA SCIENCE","deep learning":"DATA SCIENCE","data science":"DATA SCIENCE",
-                    "nlp":"DATA SCIENCE","computer vision":"DATA SCIENCE",
-                    "generative ai":"AI / ML","llm":"AI / ML","mlops":"AI / ML",
-                    "python":"SOFTWARE DEV","java":"SOFTWARE DEV","javascript":"SOFTWARE DEV",
-                    "react":"SOFTWARE DEV","full stack":"SOFTWARE DEV",
-                    "devops":"DEVOPS","aws":"CLOUD","docker":"DEVOPS",
-                    "android":"MOBILE DEV","flutter":"MOBILE DEV",
-                    "finance":"FINANCE","marketing":"MARKETING","business analyst":"BUSINESS",
+                # ── Role detection by counting domain skill matches ──
+                domain_skills = {
+                    "AI / ML":        ["machine learning","deep learning","generative ai","llm","mlops","computer vision","nlp","tensorflow","pytorch","langchain","hugging face","stable diffusion","bert","gpt"],
+                    "DATA SCIENCE":   ["data science","pandas","numpy","scikit-learn","matplotlib","seaborn","data analytics","data visualization","jupyter","feature engineering","model evaluation","recommendation system","collaborative filtering","data preprocessing","plotly","streamlit"],
+                    "SOFTWARE DEV":   ["react","nodejs","django","flask","spring boot","angular","full stack","rest api","javascript","typescript","html","css"],
+                    "DEVOPS":         ["devops","docker","kubernetes","aws","azure","ci/cd","linux","cloud"],
+                    "MOBILE DEV":     ["android","flutter","react native","kotlin","swift","ios","firebase"],
+                    "EMBEDDED / IOT": ["embedded","arduino","raspberry pi","microcontroller","iot","fpga","esp32","mqtt","sensor","embedded c"],
+                    "ELECTRICAL":     ["plc","scada","vlsi","verilog","pcb","power systems","power electronics","solar energy","electrical wiring","drives","transformer","hmi","dcs","relay"],
+                    "ELECTRONICS":    ["signal processing","rf","oscilloscope","antenna","circuit design","analog","digital electronics"],
+                    "MECHANICAL":     ["autocad","solidworks","catia","ansys","cnc","manufacturing","hvac","automobile","thermodynamics","lathe","milling","casting","welding","product design","creo","tool design","sheet metal","unigraphics"],
+                    "CIVIL":          ["civil","structural","construction","surveying","gis","highway","water resources","geotechnical","quantity surveying"],
+                    "CHEMICAL":       ["chemical","process engineering","piping","aspen","hysys","reactor","distillation","refinery"],
                 }
-                best_role = "ENGINEER"
-                for skill in skills:
-                    for keyword, role in role_map.items():
-                        if keyword in skill or skill in keyword:
-                            best_role = role
-                            break
-                    if best_role != "ENGINEER":
-                        break
+                # Count exact skill matches per domain
+                domain_scores = {}
+                skills_set = set(skills)  # exact set of detected skills
+                for domain, keywords in domain_skills.items():
+                    score = sum(1 for kw in keywords if kw in skills_set)
+                    if score > 0:
+                        domain_scores[domain] = score
+                # Pick domain with highest count
+                best_role = max(domain_scores, key=domain_scores.get) if domain_scores else "ENGINEER"
+
+                # ── Filter junk skills ──
+                JUNK = {"r","c","go","bi","rf","gan","git","css","php","bms","gis","sap","erp","html"}
+                clean_skills = [s for s in skills if s not in JUNK and len(s) > 2]
+
+                # ── Detected Domains sorted by score ──
+                sorted_domains = sorted(domain_scores.items(), key=lambda x: x[1], reverse=True)
+                domain_badges = "".join([
+                    f'<span style="background:rgba(108,99,255,0.15);border:1px solid rgba(108,99,255,0.3);color:#a89fff;padding:0.25rem 0.8rem;border-radius:20px;font-size:0.8rem;margin:0.2rem;display:inline-block;font-weight:600">{d} <span style="color:#ffd700">({sc})</span></span>'
+                    for d, sc in sorted_domains
+                ])
 
                 # ── Summary Card ──
                 st.markdown(f"""
-                <div style="background:linear-gradient(135deg,#0f0f1a,#1a1030);
-                            border:1px solid #2a2a3a;border-radius:16px;padding:1.5rem;
-                            margin-bottom:1.5rem;position:relative;overflow:hidden">
-                    <div style="position:absolute;top:0;left:0;right:0;height:3px;
-                                background:linear-gradient(90deg,#6c63ff,#43e97b)"></div>
-                    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem">
-                        <div>
-                            <div style="font-size:0.7rem;color:#6b6b80;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:0.3rem">Skills Detected</div>
-                            <div style="font-size:2.5rem;font-weight:800;color:#ffd700;font-family:'Space Mono',monospace">{len(skills)}</div>
+                <div style="background:linear-gradient(135deg,#0f0f1a,#1a1030);border:1px solid #2a2a3a;border-radius:16px;padding:1.2rem 1.5rem;margin-bottom:1rem;position:relative;overflow:hidden">
+                    <div style="position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#6c63ff,#43e97b)"></div>
+                    <div style="display:flex;gap:2rem;align-items:flex-start;flex-wrap:wrap">
+                        <div style="min-width:80px">
+                            <div style="font-size:0.7rem;color:#6b6b80;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:0.2rem">Skills Detected</div>
+                            <div style="font-size:2.5rem;font-weight:800;color:#ffd700;font-family:'Space Mono',monospace;line-height:1">{len(clean_skills)}</div>
                         </div>
-                        <div>
-                            <div style="font-size:0.7rem;color:#6b6b80;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:0.3rem">Best Role</div>
-                            <div style="font-size:1.3rem;font-weight:700;color:#6c63ff;font-family:'Space Mono',monospace">{best_role}</div>
-                        </div>
-                        <div>
-                            <div style="font-size:0.7rem;color:#6b6b80;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:0.3rem">Top Skill</div>
-                            <div style="font-size:1.1rem;font-weight:700;color:#43e97b;font-family:'Space Mono',monospace">{skills[0].upper() if skills else 'N/A'}</div>
+                        <div style="flex:1">
+                            <div style="font-size:0.7rem;color:#6b6b80;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:0.5rem">Detected Domains</div>
+                            <div>{domain_badges if domain_badges else '<span style="color:#6b6b80">No domain detected</span>'}</div>
                         </div>
                     </div>
                 </div>
                 """, unsafe_allow_html=True)
 
-                # ── Detected Skills ──
+                # ── All Detected Skills ──
                 st.markdown('<div class="section-header">✅ Detected Skills</div>', unsafe_allow_html=True)
-                skills_html = "".join([f'<span class="skill-tag">{s}</span>' for s in skills])
-                st.markdown(f'<div style="margin-bottom:1.5rem">{skills_html}</div>', unsafe_allow_html=True)
+                skills_html = "".join([f'<span class="skill-tag">{s}</span>' for s in clean_skills])
+                st.markdown(f'<div style="margin-bottom:1rem">{skills_html}</div>', unsafe_allow_html=True)
 
-                # ── Job Preference Selector ──
-                st.markdown('<div class="section-header">💼 Job Preference</div>', unsafe_allow_html=True)
-                st.markdown('<p style="color:#6b6b80;font-size:0.85rem;margin:-0.5rem 0 0.8rem 0">Select the job role you want — we will find real live openings for you</p>', unsafe_allow_html=True)
-
+                # ── Job Preference — user picks and clicks Find Jobs ──
+                st.markdown('<div class="section-header">💼 Select Job Preference</div>', unsafe_allow_html=True)
                 JOB_OPTIONS = {
-                    "🔧 Mechanical Engineer":        "Mechanical Engineer India",
-                    "⚡ Electrical Engineer":         "Electrical Engineer India",
-                    "🔌 Embedded / IoT Engineer":    "Embedded IoT Engineer India",
-                    "📡 Electronics Engineer":        "Electronics Engineer India",
-                    "🏗️ Civil Engineer":              "Civil Engineer India",
-                    "⚗️ Chemical Engineer":           "Chemical Engineer India",
-                    "🤖 ML / AI Engineer":            "Machine Learning AI Engineer India",
-                    "📊 Data Scientist":              "Data Scientist India",
-                    "📈 Data Analyst":                "Data Analyst India",
-                    "💻 Software Developer":          "Software Developer India",
-                    "🌐 Full Stack Developer":        "Full Stack Developer India",
-                    "☁️ DevOps / Cloud Engineer":     "DevOps Cloud Engineer India",
-                    "📱 Mobile App Developer":        "Mobile App Developer India",
-                    "🔐 Cybersecurity Engineer":      "Cybersecurity Engineer India",
-                    "🏭 PLC / Automation Engineer":   "PLC SCADA Automation Engineer India",
-                    "🔬 R&D / Research Engineer":     "Research Development Engineer India",
-                    "🛞 Automobile Engineer":         "Automobile Engineer India",
-                    "☀️ Renewable Energy Engineer":   "Renewable Energy Solar Engineer India",
-                    "🧱 Structural Engineer":         "Structural Engineer India",
-                    "🏢 Project Manager":             "Project Manager Engineering India",
+                    "🔧 Mechanical Engineer":       "Mechanical Engineer India",
+                    "⚡ Electrical Engineer":        "Electrical Engineer India",
+                    "🔌 Embedded / IoT Engineer":   "Embedded IoT Engineer India",
+                    "📡 Electronics Engineer":       "Electronics Engineer India",
+                    "🏗️ Civil Engineer":             "Civil Engineer India",
+                    "⚗️ Chemical Engineer":          "Chemical Engineer India",
+                    "🤖 ML / AI Engineer":           "Machine Learning AI Engineer India",
+                    "📊 Data Scientist":             "Data Scientist India",
+                    "📈 Data Analyst":               "Data Analyst India",
+                    "💻 Software Developer":         "Software Developer India",
+                    "🌐 Full Stack Developer":       "Full Stack Developer India",
+                    "☁️ DevOps / Cloud Engineer":    "DevOps Cloud Engineer India",
+                    "📱 Mobile App Developer":       "Mobile App Developer India",
+                    "🔐 Cybersecurity Engineer":     "Cybersecurity Engineer India",
+                    "🏭 PLC / Automation Engineer":  "PLC SCADA Automation Engineer India",
+                    "🛞 Automobile Engineer":        "Automobile Engineer India",
+                    "☀️ Renewable Energy Engineer":  "Renewable Energy Solar Engineer India",
+                    "🧱 Structural Engineer":        "Structural Engineer India",
+                    "🏢 Project Manager":            "Project Manager Engineering India",
                 }
-
-                # Auto-detect best role from skills to set default index
-                skill_to_pref = {
-                    "machine learning":   "📊 Data Scientist",
-                    "deep learning":      "📊 Data Scientist",
-                    "data science":       "📊 Data Scientist",
-                    "generative ai":      "🤖 ML / AI Engineer",
-                    "llm":                "🤖 ML / AI Engineer",
-                    "mlops":              "🤖 ML / AI Engineer",
-                    "data analyst":       "📈 Data Analyst",
-                    "powerbi":            "📈 Data Analyst",
-                    "tableau":            "📈 Data Analyst",
-                    "autocad":            "🔧 Mechanical Engineer",
-                    "solidworks":         "🔧 Mechanical Engineer",
-                    "catia":              "🔧 Mechanical Engineer",
-                    "ansys":              "🔧 Mechanical Engineer",
-                    "cnc":                "🔧 Mechanical Engineer",
-                    "hvac":               "🔧 Mechanical Engineer",
-                    "plc":                "⚡ Electrical Engineer",
-                    "scada":              "⚡ Electrical Engineer",
-                    "vlsi":               "⚡ Electrical Engineer",
-                    "pcb":                "⚡ Electrical Engineer",
-                    "embedded":           "🔌 Embedded / IoT Engineer",
-                    "arduino":            "🔌 Embedded / IoT Engineer",
-                    "iot":                "🔌 Embedded / IoT Engineer",
-                    "microcontroller":    "🔌 Embedded / IoT Engineer",
-                    "civil":              "🏗️ Civil Engineer",
-                    "structural":         "🧱 Structural Engineer",
-                    "revit":              "🏗️ Civil Engineer",
-                    "chemical":           "⚗️ Chemical Engineer",
-                    "react":              "🌐 Full Stack Developer",
-                    "nodejs":             "🌐 Full Stack Developer",
-                    "django":             "💻 Software Developer",
-                    "flutter":            "📱 Mobile App Developer",
-                    "android":            "📱 Mobile App Developer",
-                    "devops":             "☁️ DevOps / Cloud Engineer",
-                    "aws":                "☁️ DevOps / Cloud Engineer",
-                    "docker":             "☁️ DevOps / Cloud Engineer",
-                    "automobile":         "🛞 Automobile Engineer",
-                    "solar":              "☀️ Renewable Energy Engineer",
-                }
-                detected_pref = "📊 Data Scientist"  # default
-                for skill in skills:
-                    for keyword, pref in skill_to_pref.items():
-                        if keyword in skill or skill in keyword:
-                            detected_pref = pref
-                            break
-                    if detected_pref != "📊 Data Scientist":
-                        break
-
-                job_options_list = list(JOB_OPTIONS.keys())
-                default_idx = job_options_list.index(detected_pref) if detected_pref in job_options_list else 0
-                job_pref = st.selectbox("Choose your preferred job role", job_options_list, index=default_idx, label_visibility="collapsed")
+                job_pref  = st.selectbox("Choose your job role", list(JOB_OPTIONS.keys()), label_visibility="collapsed")
                 api_query = JOB_OPTIONS[job_pref]
-                num_results = st.selectbox("Number of jobs to show", [5, 10, 15, 20], index=1)
-                fetch_clicked = st.button("🔍 Find Jobs for Me", use_container_width=True)
 
-                if not fetch_clicked:
-                    st.markdown("""<div style="background:#111118;border:2px dashed #2a2a3a;border-radius:12px;padding:2rem;text-align:center;color:#6b6b80;margin-top:0.5rem"><div style="font-size:2rem">💼</div><div style="margin-top:0.5rem">Select your job preference above and click Find Jobs</div></div>""", unsafe_allow_html=True)
-                else:
-                    st.markdown(f'''<div class="section-header">🔴 Live Jobs — {job_pref}<span style="font-size:0.75rem;color:#6b6b80;font-weight:400;margin-left:0.5rem">· searching: <span style="color:#43e97b">{api_query}</span></span></div>''', unsafe_allow_html=True)
-
-                if fetch_clicked:
-                    with st.spinner("🔄 Fetching live jobs for your preference..."):
+                if st.button("🔍 Find Jobs", use_container_width=True):
+                    st.markdown(f'<div class="section-header">🔴 Live Jobs · <span style="color:#43e97b;font-size:0.85rem">{api_query}</span></div>', unsafe_allow_html=True)
+                    with st.spinner("🔄 Fetching live jobs..."):
                         try:
                             url      = "https://jsearch.p.rapidapi.com/search"
                             headers  = {"X-RapidAPI-Key": RAPIDAPI_KEY, "X-RapidAPI-Host": "jsearch.p.rapidapi.com"}
@@ -448,15 +370,15 @@ if "Home" in page:
                             response = requests.get(url, headers=headers, params=params, timeout=15)
                             data     = response.json()
                             if "data" in data and len(data["data"]) > 0:
-                                live_jobs = data["data"][:num_results]
-                                st.markdown(f'''<div style="background:#0f1a0f;border:1px solid #43e97b33;border-radius:12px;padding:0.7rem 1.2rem;margin-bottom:1rem;display:flex;align-items:center;gap:1rem"><div style="width:8px;height:8px;border-radius:50%;background:#43e97b;box-shadow:0 0 8px #43e97b"></div><span style="color:#43e97b;font-weight:700">{len(live_jobs)} Live Jobs Found</span><span style="color:#6b6b80;font-size:0.82rem">&nbsp;· Updated just now · LinkedIn, Indeed, Glassdoor</span></div>''', unsafe_allow_html=True)
+                                live_jobs = data["data"][:10]
+                                st.markdown(f'''<div style="background:#0f1a0f;border:1px solid #43e97b33;border-radius:12px;padding:0.7rem 1.2rem;margin-bottom:1rem;display:flex;align-items:center;gap:1rem"><div style="width:8px;height:8px;border-radius:50%;background:#43e97b;box-shadow:0 0 8px #43e97b"></div><span style="color:#43e97b;font-weight:700">{len(live_jobs)} Live Jobs Found</span><span style="color:#6b6b80;font-size:0.82rem">&nbsp;· LinkedIn, Indeed, Glassdoor</span></div>''', unsafe_allow_html=True)
                                 render_live_job_cards(live_jobs)
                             else:
-                                st.warning("⚠️ No live jobs found right now. Try again in a moment.")
+                                st.warning("⚠️ No jobs found. Try a different role.")
                         except requests.exceptions.Timeout:
-                            st.error("⏱️ Request timed out. Please try again.")
+                            st.error("⏱️ Request timed out.")
                         except Exception as e:
-                            st.error(f"❌ Could not fetch live jobs: {str(e)}")
+                            st.error(f"❌ Error: {str(e)}")
 
             else:
                 st.info("No skills detected. Try entering skills manually.")
