@@ -24,3 +24,6 @@ firebase-credentials.json
 # Local User File Uploads
 backend/uploads/
 uploads/
+
+# Large resume dataset
+data/Resume/Resume.csv
