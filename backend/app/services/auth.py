@@ -42,6 +42,62 @@ def authenticate_user(db: Session, credentials: UserLogin) -> str:
     access_token = create_access_token(subject=user.id)
     return access_token
 
+def authenticate_firebase_user(db: Session, id_token: str) -> str:
+    """Verifies Firebase ID token, finds/creates corresponding HireAgent User in MySQL, and returns a HireAgent JWT."""
+    from app.core.firebase import verify_firebase_id_token
+    try:
+        claims = verify_firebase_id_token(id_token)
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail=f"Firebase authentication failed: {str(e)}",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    
+    google_uid = claims.get("uid")
+    email = claims.get("email")
+    name = claims.get("name") or (email.split("@")[0] if email else "Google User")
+    
+    if not google_uid or not email:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Firebase token missing required email or UID claims"
+        )
+    
+    email_clean = email.lower()
+    
+    # 1. Search existing user by google_id
+    user = db.query(User).filter(User.google_id == google_uid).first()
+    
+    if not user:
+        # 2. Search existing user by email
+        user_by_email = db.query(User).filter(User.email == email_clean).first()
+        if user_by_email:
+            if user_by_email.google_id and user_by_email.google_id != google_uid:
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail="Email is associated with a different Google account"
+                )
+            # Safe account linking: attach google_id to existing account
+            user_by_email.google_id = google_uid
+            db.commit()
+            db.refresh(user_by_email)
+            user = user_by_email
+        else:
+            # 3. Create new Google/Firebase user
+            user = User(
+                name=name,
+                email=email_clean,
+                google_id=google_uid,
+                password_hash=None
+            )
+            db.add(user)
+            db.commit()
+            db.refresh(user)
+            
+    access_token = create_access_token(subject=user.id)
+    return access_token
+
 def get_current_user(
     auth: HTTPAuthorizationCredentials = Depends(security_scheme),
     db: Session = Depends(get_db)

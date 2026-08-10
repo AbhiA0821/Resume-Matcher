@@ -11,6 +11,9 @@ class UserLogin(BaseModel):
     email: EmailStr
     password: str
 
+class FirebaseAuthRequest(BaseModel):
+    id_token: str = Field(..., description="Firebase ID token received from client Google Sign-In")
+
 class Token(BaseModel):
     access_token: str
     token_type: str = "bearer"

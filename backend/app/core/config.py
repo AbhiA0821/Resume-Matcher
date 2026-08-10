@@ -1,5 +1,5 @@
 import os
-from typing import List
+from typing import List, Optional
 from pydantic_settings import BaseSettings
 
 # Calculate absolute path to backend/.env so it loads regardless of working directory
@@ -24,6 +24,9 @@ class Settings(BaseSettings):
     JWT_SECRET_KEY: str = "super_secret_jwt_key_change_in_production_12345"
     JWT_ALGORITHM: str = "HS256"
     JWT_ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
+
+    # Firebase Authentication Configuration
+    FIREBASE_CREDENTIALS_PATH: Optional[str] = None
 
     class Config:
         case_sensitive = True
