@@ -20,3 +20,7 @@ r e s u m e _ m a t c h e r . z i p
 *serviceAccount*.json
 firebase-credentials.json
 *.json.secret
+
+# Local User File Uploads
+backend/uploads/
+uploads/
