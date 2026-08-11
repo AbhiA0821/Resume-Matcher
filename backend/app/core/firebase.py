@@ -8,8 +8,20 @@ def get_firebase_app():
     """Initializes Firebase Admin SDK if not already initialized."""
     if not firebase_admin._apps:
         cred_path = settings.FIREBASE_CREDENTIALS_PATH
-        if cred_path and os.path.exists(cred_path):
-            cred = credentials.Certificate(cred_path)
+        resolved_path = None
+        if cred_path:
+            if os.path.exists(cred_path):
+                resolved_path = cred_path
+            else:
+                # Check relative to project root (parent of backend directory)
+                from app.core.config import BASE_DIR
+                project_root = os.path.dirname(BASE_DIR)
+                candidate = os.path.join(project_root, cred_path)
+                if os.path.exists(candidate):
+                    resolved_path = candidate
+
+        if resolved_path:
+            cred = credentials.Certificate(resolved_path)
             firebase_admin.initialize_app(cred)
         else:
             try:

@@ -18,6 +18,7 @@ r e s u m e _ m a t c h e r . z i p
  * . z i p  
 
 # Firebase Credentials
+secrets/
 *serviceAccount*.json
 firebase-credentials.json
 *.json.secret
