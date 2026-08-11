@@ -6,3 +6,17 @@ plotly
 pdfplumber
 python-docx
 requests
+
+# HireAgent Backend Dependencies
+fastapi
+uvicorn
+sqlalchemy
+alembic
+pymysql
+pydantic
+pydantic-settings
+pyjwt
+passlib
+firebase-admin
+pymupdf
+pypdf

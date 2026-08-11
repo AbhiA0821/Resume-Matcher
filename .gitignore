@@ -3,7 +3,8 @@ __pycache__/
 *.pyc
 *.pyo
 data/resume_matcher.db
-models/
+/models/
+!backend/app/models/
 .env
 .venv/
 venv/

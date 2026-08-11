@@ -41,8 +41,16 @@ def save_and_create_resume(db: Session, user: User, file: UploadFile) -> Resume:
         f.write(content)
 
     extracted_text = extract_resume_text(file_path)
-    if not extracted_text:
-        extracted_text = f"Resume content extracted from {filename}"
+    if not extracted_text or not extracted_text.strip():
+        if os.path.exists(file_path):
+            try:
+                os.remove(file_path)
+            except Exception:
+                pass
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail="Failed to extract readable text content from the uploaded resume."
+        )
 
     resume = Resume(
         user_id=user.id,
