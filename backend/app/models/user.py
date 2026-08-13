@@ -15,4 +15,6 @@ class User(Base):
 
     resumes = relationship("Resume", back_populates="user", cascade="all, delete-orphan")
     profile = relationship("UserProfile", back_populates="user", uselist=False, cascade="all, delete-orphan")
+    preferences = relationship("JobPreferences", back_populates="user", uselist=False, cascade="all, delete-orphan")
+
 
