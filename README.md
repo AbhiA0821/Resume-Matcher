@@ -108,6 +108,11 @@ GET  /api/v1/auth/me
 POST /api/v1/resumes
 GET  /api/v1/resumes
 GET  /api/v1/resumes/{resume_id}
+
+GET  /api/v1/profile
+PUT  /api/v1/profile
+GET  /api/v1/preferences
+PUT  /api/v1/preferences
 ```
 API documentation:
 ```text
@@ -150,24 +155,24 @@ Phase	Feature	Status
 2	MySQL + SQLAlchemy + Alembic	✅
 3	JWT Authentication	✅
 4	Firebase Google Authentication	✅
-5	Resume Management	🔄
-6	Text Processing & Chunking	⏳
-7	Embeddings	⏳
-8	Vector Database	⏳
-9	HNSW / Semantic Search	⏳
-10	LLM / Gemini	⏳
-11	RAG	⏳
-12	Multi-Agent System	⏳
-13	Genetic Algorithm	⏳
-14	Job Analysis & Matching	⏳
-15	Frontend	⏳
-16	Deployment	⏳
+5	Resume Management	✅
+6	Text Processing & Chunking	✅
+7	User Profile & Job Preferences Engine	✅
+8	Embeddings	⏳
+9	Vector Database	⏳
+10	HNSW / Semantic Search	⏳
+11	LLM / Gemini	⏳
+12	RAG	⏳
+13	Multi-Agent System	⏳
+14	Genetic Algorithm	⏳
+15	Job Analysis & Matching	⏳
+16	Frontend	⏳
+17	Deployment	⏳
 📌 Current Status
-Active development — Phase 5
+Active development — Phase 7 Completed
 Completed:
-`FastAPI` • `MySQL` • `JWT` • `Firebase Google Authentication`
-Currently building:
-`Resume Management`
+`FastAPI` • `MySQL` • `JWT` • `Firebase Google Authentication` • `Resume Management` • `User Profile & Job Preferences Engine`
+
 Next major AI stages:
 `Chunking → Embeddings → Vector DB → HNSW → RAG → LLM → Multi-Agent AI`
 👨‍💻 Author
