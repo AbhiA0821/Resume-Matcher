@@ -20,3 +20,8 @@ passlib
 firebase-admin
 pymupdf
 pypdf
+python-multipart
+bcrypt
+email-validator
+sentence-transformers
+qdrant-client

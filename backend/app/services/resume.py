@@ -61,6 +61,15 @@ def save_and_create_resume(db: Session, user: User, file: UploadFile) -> Resume:
     db.add(resume)
     db.commit()
     db.refresh(resume)
+
+    # Trigger Qdrant Cloud Vector Indexing (Phase 8)
+    try:
+        from app.services.resume_chunking import index_user_resume_vectors
+        index_user_resume_vectors(user_id=user.id, resume_id=resume.id, extracted_text=extracted_text)
+    except Exception as e:
+        # Non-blocking log if Qdrant Cloud is temporarily unavailable
+        print(f"[Warning] Failed to index resume {resume.id} to Qdrant Cloud: {e}")
+
     return resume
 
 def get_user_resumes(db: Session, user: User) -> List[Resume]:
@@ -85,6 +94,14 @@ def delete_user_resume(db: Session, user: User, resume_id: int) -> dict:
             os.remove(resume.file_path)
         except Exception:
             pass
+
+    # Cleanup Qdrant Cloud Vector Points (Phase 8)
+    try:
+        from app.services.qdrant_service import delete_resume_vectors
+        delete_resume_vectors(user_id=user.id, resume_id=resume.id)
+    except Exception as e:
+        print(f"[Warning] Failed to delete resume {resume.id} vectors from Qdrant: {e}")
+
     db.delete(resume)
     db.commit()
     return {"message": "Resume deleted successfully", "id": resume_id}

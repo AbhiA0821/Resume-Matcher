@@ -49,6 +49,25 @@ def test_health_endpoints():
     assert r2.status_code == 200
     assert r2.json() == {"status": "ok"}
 
+def test_jobs_endpoint():
+    """Verify FastAPI GET /api/v1/jobs endpoint and query parameter support."""
+    resp = client.get("/api/v1/jobs")
+    assert resp.status_code == 200
+    data = resp.json()
+    assert "total" in data
+    assert "jobs" in data
+    assert isinstance(data["jobs"], list)
+
+    # Test search filter parameter
+    resp_search = client.get("/api/v1/jobs?search=Python")
+    assert resp_search.status_code == 200
+    assert "jobs" in resp_search.json()
+
+    # Test role filter parameter
+    resp_role = client.get("/api/v1/jobs?role=Data%20Scientist")
+    assert resp_role.status_code == 200
+    assert "jobs" in resp_role.json()
+
 def test_unauthenticated_access():
     """Verify profile & preferences endpoints require authentication."""
     r_prof = client.get("/api/v1/profile")
@@ -153,3 +172,28 @@ def test_existing_resumes_and_auth_integrity():
     resumes_resp = client.get("/api/v1/resumes", headers=user["headers"])
     assert resumes_resp.status_code == 200
     assert isinstance(resumes_resp.json(), list)
+
+def test_ephemeral_file_deletion_fallback():
+    """Verify that if the physical file on disk is removed, details and deletion endpoints still succeed via MySQL extracted text."""
+    user = create_random_user()
+    
+    # 1. Upload resume
+    docx_path = os.path.join(BACKEND_DIR, "uploads", "resumes", "1_ecf1fbe0_jane_resume.docx")
+    with open(docx_path, "rb") as f:
+        file_bytes = f.read()
+
+    upload_resp = client.post("/api/v1/resumes", files={"file": ("test_resume.docx", file_bytes)}, headers=user["headers"])
+    assert upload_resp.status_code == 201
+    resume_id = upload_resp.json()["id"]
+
+    # 2. Get resume detail from MySQL -> verifies extracted text is stored
+    detail_resp = client.get(f"/api/v1/resumes/{resume_id}", headers=user["headers"])
+    assert detail_resp.status_code == 200
+    assert "extracted_text" in detail_resp.json()
+    assert len(detail_resp.json()["extracted_text"]) > 0
+
+    # 3. Delete resume DB record cleanly
+    del_resp = client.delete(f"/api/v1/resumes/{resume_id}", headers=user["headers"])
+    assert del_resp.status_code == 200
+    assert del_resp.json()["id"] == resume_id
+

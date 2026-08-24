@@ -104,3 +104,5 @@ def get_all_results():
 
 # Initialize tables on import
 create_tables()
+
+

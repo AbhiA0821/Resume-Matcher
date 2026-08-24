@@ -1,0 +1,79 @@
+import math
+from typing import List, Optional
+
+# Singleton container for lazy model initialization
+_model_instance = None
+MODEL_NAME = "BAAI/bge-small-en-v1.5"
+EMBEDDING_DIMENSION = 384
+
+def get_embedding_model():
+    """Lazily initializes and returns the SentenceTransformer model singleton."""
+    global _model_instance
+    if _model_instance is None:
+        from sentence_transformers import SentenceTransformer
+        # Load local open model BAAI/bge-small-en-v1.5 (downloaded/cached locally via Hugging Face)
+        _model_instance = SentenceTransformer(MODEL_NAME)
+    return _model_instance
+
+def _validate_single_text(text: str, arg_name: str = "text") -> str:
+    """Validates that an input argument is a non-empty, non-whitespace string."""
+    if text is None or not isinstance(text, str):
+        raise ValueError(f"Input '{arg_name}' must be a non-empty string.")
+    cleaned = text.strip()
+    if not cleaned:
+        raise ValueError(f"Input '{arg_name}' cannot be empty or whitespace-only.")
+    return text
+
+def _validate_vector_output(vector: List[float]) -> List[float]:
+    """Validates that generated vector matches expected dimension (384) and contains no NaN/infinite values."""
+    if len(vector) != EMBEDDING_DIMENSION:
+        raise ValueError(f"Embedding dimension mismatch: expected {EMBEDDING_DIMENSION}, got {len(vector)}.")
+    
+    for idx, val in enumerate(vector):
+        if not isinstance(val, (int, float)) or math.isnan(val) or math.isinf(val):
+            raise ValueError(f"Invalid non-finite embedding value detected at index {idx}: {val}")
+    return vector
+
+def embed_text(text: str) -> List[float]:
+    """Converts a single input string into a 384-dimensional normalized vector representation.
+    
+    Architectural Principle:
+    Embeddings are deterministic vector representations of text (Text -> Vector).
+    They do NOT generate facts, summarize text, or infer missing resume skills.
+    
+    Normalization Note:
+    'normalize_embeddings=True' is enabled so that the resulting vectors are L2-normalized (unit length).
+    For normalized vectors, cosine similarity equals the dot/inner product.
+    """
+    valid_text = _validate_single_text(text, arg_name="text")
+    model = get_embedding_model()
+    
+    # Generate normalized embedding vector
+    raw_embedding = model.encode(valid_text, normalize_embeddings=True, convert_to_numpy=True)
+    vector = [float(x) for x in raw_embedding.tolist()]
+    
+    return _validate_vector_output(vector)
+
+def embed_texts(texts: List[str]) -> List[List[float]]:
+    """Converts a batch list of input strings into a list of 384-dimensional normalized vector representations.
+    Preserves input ordering exactly.
+    """
+    if texts is None or not isinstance(texts, list):
+        raise ValueError("Input 'texts' must be a list of strings.")
+    if len(texts) == 0:
+        raise ValueError("Input 'texts' list cannot be empty.")
+    
+    for idx, item in enumerate(texts):
+        _validate_single_text(item, arg_name=f"texts[{idx}]")
+        
+    model = get_embedding_model()
+    
+    # Generate batch embeddings preserving order
+    raw_embeddings = model.encode(texts, normalize_embeddings=True, convert_to_numpy=True)
+    
+    output_vectors: List[List[float]] = []
+    for idx, raw_vec in enumerate(raw_embeddings):
+        vector = [float(x) for x in raw_vec.tolist()]
+        output_vectors.append(_validate_vector_output(vector))
+        
+    return output_vectors
